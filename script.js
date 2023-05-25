@@ -338,11 +338,11 @@ imagesList.forEach(image => {
 ////////////Lifecycle DOM events////////////////////
 
 document.addEventListener('DOMContentLoaded', function(e){
-  console.log('Дерево ДОМ Созданно!', e);
+  // console.log('Дерево ДОМ Созданно!', e);
 })
 
 window.addEventListener('load', function(e){
-  console.log('Страница полностью загружена', e);
+  // console.log('Страница полностью загружена', e);
 })
 
 // window.addEventListener('beforeunload', function(e){
@@ -355,4 +355,75 @@ window.addEventListener('load', function(e){
 
 //////////// slider /////////////////
 
+const slides = document.querySelectorAll('.slide');
+// const slider = document.querySelector('.slider');
+const btnLeft = document.querySelector('.slider__btn--left');
+const btnRight = document.querySelector('.slider__btn--right');
+const dotsContainer = document.querySelector('.dots');
 
+// slider.style.transform = 'scale(0.4)';
+// slider.style.overflow = 'visible';
+
+let currentSlide = 0;
+const slidesLength = slides.length
+
+const createDots = () => {
+  slides.forEach((_, index) => {
+    dotsContainer.insertAdjacentHTML('beforeend', `
+      <button class="dots__dot" data-slide="${index}"></button>
+    `)
+  })
+}
+createDots();
+
+const activateCurrentDot = (slide) => {
+  document.querySelectorAll('.dots__dot').forEach(dot => dot.classList.remove('dots__dot--active'));
+  document.querySelector(`.dots__dot[data-slide="${slide}"]`).classList.add('dots__dot--active');
+}
+activateCurrentDot(currentSlide);
+
+const moveToSlide = (slide) => {
+   slides.forEach((s, index) => (s.style.transform = `translateX(${(index - slide) * 100}%)`))
+}
+
+moveToSlide(currentSlide);
+
+
+const nextSlide = () => {
+  if(currentSlide === slidesLength-1){
+    currentSlide = 0;
+  }else{
+    currentSlide++;
+  }
+  moveToSlide(currentSlide);
+  activateCurrentDot(currentSlide);
+}
+
+const previousSlide = () => {
+  if(currentSlide === 0){
+    currentSlide = slidesLength-1;
+  }else{
+    currentSlide--;
+  }
+  moveToSlide(currentSlide);
+  activateCurrentDot(currentSlide);
+}
+
+btnRight.addEventListener('click', nextSlide)
+
+btnLeft.addEventListener('click', previousSlide)
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'ArrowRight') nextSlide();
+  if(e.key === 'ArrowLeft') previousSlide();
+})
+
+dotsContainer.addEventListener('click', function(e){
+  if(e.target.classList.contains('dots__dot')){
+    const slide = e.target.dataset.slide;
+    moveToSlide(slide);
+    activateCurrentDot(slide);
+  }
+})
+
+/////////////////
